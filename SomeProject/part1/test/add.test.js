@@ -7,7 +7,7 @@ describe('add', () => {
     });
 
     it('should add two integers', () => {
-        expect(add(10, 20)).to.equal(30);
+        expect(add(20, 30)).to.equal(50);
     });
 
     it('should add two decimal numbers', () => {
