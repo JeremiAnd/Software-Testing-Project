@@ -8,14 +8,23 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "mocha --timeout 20000",
-    "coverage": "nyc npm test"
+    "test": "mocha --require @babel/register --timeout 20000",
+    "coverage": "nyc --all npm test"
   },
   "nyc": {
-    "reporter": ["lcov", "text"],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
     "report-dir": "./coverage",
-    "include": ["SomeProject/part1/src/**/*.js"],
-    "exclude": ["test"]
+    "all": true,
+    "include": [
+      "src/**/*.js",
+      "src/**/*.jsx"
+    ],
+    "exclude": [
+      "test"
+    ]
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -23,11 +32,16 @@
     "software-testing-assignment": "github:otula/COMP.SE.200-2024-2025-1"
   },
   "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-react": "^7.25.9",
+    "@babel/register": "^7.25.9",
     "@eslint/js": "^9.9.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "chai": "^5.1.2",
+    "coveralls": "^3.1.1",
     "eslint": "^9.9.0",
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
