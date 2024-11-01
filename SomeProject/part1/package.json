@@ -8,7 +8,13 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "mocha --timeout 20000"
+    "test": "mocha --timeout 20000",
+    "coverage": "nyc npm test"
+  },
+  "nyc": {
+    "reporter": ["lcov", "text"],
+    "report-dir": "./coverage",
+    "exclude": ["test"]
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -27,6 +33,7 @@
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
     "mocha": "^10.8.2",
+    "nyc": "^17.1.0",
     "vite": "^5.4.1"
   }
 }
