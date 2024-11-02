@@ -30,8 +30,8 @@ const App = () => {
   const handleUserCreation = () => {
     const finalFirstName = capitalize(defaultTo(user.firstName, 'John'));
     const finalLastName = capitalize(defaultTo(user.lastName, 'Doe'));
-    if (isEmpty(user.email) || !endsWith(user.email, '.com')) {
-      alert('Email is required and should end with .com');
+    if (isEmpty(user.email) || !user.email.includes('@') || !endsWith(user.email, '.com')) {
+      alert('Email is required, should contain "@" and should end with ".com"');
       return;
     }
     setUser({ ...user, firstName: finalFirstName, lastName: finalLastName });
