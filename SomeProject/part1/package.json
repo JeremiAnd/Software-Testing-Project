@@ -18,8 +18,7 @@
     ],
     "report-dir": "./coverage",
     "include": [
-      "src/**/*.js",
-      "src/**/*.jsx"
+      "src/**/*.js"
     ],
     "extension": [
       ".js",
