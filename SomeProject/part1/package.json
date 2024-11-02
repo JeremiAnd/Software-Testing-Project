@@ -9,23 +9,19 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "mocha --timeout 20000",
-    "coverage": "nyc --reporter=text --reporter=lcov mocha --require @babel/register --timeout 20000"
+    "coverage": "c8 --reporter=lcov --reporter=text npm test"
   },
   "nyc": {
     "reporter": [
-      "lcov",
-      "text"
+      "text",
+      "lcov"
     ],
     "report-dir": "./coverage",
-    "all": true,
     "include": [
-      "src/**/*.js"
+      "src/**/*.js",
+      "src/**/*.jsx"
     ],
-    "exclude": ["test"],
-    "extension": [
-      ".js",
-      ".jsx"
-    ]
+    "all": true
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -33,15 +29,11 @@
     "software-testing-assignment": "github:otula/COMP.SE.200-2024-2025-1"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
-    "@babel/preset-env": "^7.26.0",
-    "@babel/preset-react": "^7.25.9",
-    "@babel/register": "^7.25.9",
     "@eslint/js": "^9.9.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
-    "babel-plugin-istanbul": "^7.0.0",
+    "c8": "^10.1.2",
     "chai": "^5.1.2",
     "coveralls": "^3.1.1",
     "eslint": "^9.9.0",
@@ -50,7 +42,6 @@
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
     "mocha": "^10.8.2",
-    "nyc": "^17.1.0",
     "vite": "^5.4.1"
   }
 }
