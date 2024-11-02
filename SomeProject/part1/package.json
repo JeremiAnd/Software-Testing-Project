@@ -9,9 +9,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "mocha --timeout 20000",
-    "coverage": "c8 --reporter=lcov --reporter=text npm test"
+    "coverage": "c8 --all npm run test"
   },
-  "nyc": {
+  "c8": {
     "reporter": [
       "text",
       "lcov"
@@ -21,7 +21,10 @@
       "src/**/*.js",
       "src/**/*.jsx"
     ],
-    "all": true
+    "extension": [
+      ".js",
+      ".jsx"
+    ]
   },
   "dependencies": {
     "react": "^18.3.1",
