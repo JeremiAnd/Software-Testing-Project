@@ -20,7 +20,7 @@ describe('Library component - reduce', () => {
 
     it('should handle multiply operations', () => {
         const numbers = [2, 2, 2, -2];
-        const sum = reduce(numbers, (acc, num) => acc * num, 0);
+        const sum = reduce(numbers, (acc, num) => acc * num, 1);
         expect(sum).to.equal(-16);
     });
 });
