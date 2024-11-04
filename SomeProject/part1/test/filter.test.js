@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-describe('filter', () => {
+describe('Library component - filter', () => {
     let filter;
     before(async () => {
         filter = (await import('software-testing-assignment/src/filter.js')).default;

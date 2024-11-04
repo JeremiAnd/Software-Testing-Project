@@ -2,10 +2,34 @@ import 'jsdom-global/register.js';
 import { expect } from 'chai';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
-import App from '../src/App.js'; // Adjust the path as needed
+import App from '../src/App.js'; // Adjust the path as needed, now .js and not .jsx
 import { within } from '@testing-library/react'
 
+global.localStorage = {
+  getItem: (key) => {
+    return global.localStorage[key] || null;
+  },
+  setItem: (key, value) => {
+    global.localStorage[key] = value.toString();
+  },
+  removeItem: (key) => {
+    delete global.localStorage[key];
+  },
+  clear: () => {
+    Object.keys(global.localStorage).forEach(key => {
+      if (key !== 'getItem' && key !== 'setItem' && key !== 'removeItem' && key !== 'clear') {
+        delete global.localStorage[key];
+      }
+    });
+  }
+};
+
+// clear localStorage before each test
 describe('App Component', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   it('renders the main header', () => {
     render(React.createElement(App));
     const headerElement = screen.getByText(/E-commerce store/i);
@@ -15,7 +39,7 @@ describe('App Component', () => {
   it('allows creating a new user', () => {
     render(React.createElement(App));
 
-    // Simulate filling in user creation form
+    // Filling user creation form
     fireEvent.change(screen.getByPlaceholderText('first name'), { target: { value: 'John' } });
     fireEvent.change(screen.getByPlaceholderText('last name'), { target: { value: 'Doe' } });
     fireEvent.change(screen.getByPlaceholderText('email'), { target: { value: 'john.doe@gmail.com' } });
@@ -38,7 +62,7 @@ describe('App Component', () => {
     const cartSection = cartHeading.parentElement;
 
     // Verify the product appears in the cart
-    const cartItem = within(cartSection).getByText(/Apple - \$1.20/i); // Adjust based on actual product format
+    const cartItem = within(cartSection).getByText(/Apple - \$1.20/i);
     expect(cartItem).to.exist;
   });
 
@@ -49,8 +73,8 @@ describe('App Component', () => {
     // Simulate adding multiple products to the cart
     fireEvent.click(addCartButtons[0]);
 
-    // Verify total cart price is updated
-    const totalPrice = screen.getByText(/Total:/i); // Update based on price of items added
+    // Verify that total cart price is updated
+    const totalPrice = screen.getByText(/Total:/i);
     expect(totalPrice.textContent).to.contain('$1.20');
   });
 });

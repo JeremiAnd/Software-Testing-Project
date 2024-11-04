@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-describe('capitalize', () => {
+describe('Library component - capitalize', () => {
     let capitalize;
     before(async () => {
         capitalize = (await import('software-testing-assignment/src/capitalize.js')).default;

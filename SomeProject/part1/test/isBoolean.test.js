@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-describe('isBoolean', () => {
+describe('Library component - isBoolean', () => {
     let isBoolean;
     before(async () => {
         isBoolean = (await import('software-testing-assignment/src/isBoolean.js')).default;

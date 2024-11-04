@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-describe('endsWith', () => {
+describe('Library component - endsWith', () => {
     let endsWith;
     before(async () => {
         endsWith = (await import('software-testing-assignment/src/endsWith.js')).default;

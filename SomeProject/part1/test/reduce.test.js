@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-describe('reduce', () => {
+describe('Library component - reduce', () => {
     let reduce;
     before(async () => {
         reduce = (await import('software-testing-assignment/src/reduce.js')).default;

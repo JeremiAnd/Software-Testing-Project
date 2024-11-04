@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-describe('map', () => {
+describe('Library component - map', () => {
     let map;
     before(async () => {
         map = (await import('software-testing-assignment/src/map.js')).default;

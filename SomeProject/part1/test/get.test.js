@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-describe('get', () => {
+describe('Library component - get', () => {
     let get;
     before(async () => {
         get = (await import('software-testing-assignment/src/get.js')).default;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import capitalize from 'software-testing-assignment/src/capitalize.js';
 import add from 'software-testing-assignment/src/add.js';
 import get from 'software-testing-assignment/src/get.js';
@@ -19,31 +19,96 @@ const App = () => {
     sendNewsLetter: false,
   });
 
+  const [userCreated, setUserCreated] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-
   const [cart, setCart] = useState([]);
-  const [products] = useState([
-    { name: 'Apple', type: 'Fruit', price: 1.2 },
-    { name: 'Banana', type: 'Fruit', price: 0.5 },
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const [products, setProducts] = useState([
+    { name: 'Apple', type: 'Fruit', price: 1.2, producer: "Johnson's" },
+    { name: 'Banana', type: 'Fruit', price: 0.5, producer: "Chiquita" },
+    { name: 'Carrot', type: 'Vegetable', price: 0.15, producer: "Viljanen Oy" },
   ]);
 
+  const [newProduct, setNewProduct] = useState({
+    name: '',
+    type: '',
+    price: '',
+    producer: '',
+  });
+
+  // Store cart items if page gets reloaded
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if(savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
+
+  // User creation
   const handleUserCreation = () => {
     const finalFirstName = capitalize(defaultTo(user.firstName, 'John'));
     const finalLastName = capitalize(defaultTo(user.lastName, 'Doe'));
-    if (isEmpty(user.email) || !user.email.includes('@') || !endsWith(user.email, '.com')) {
+    const email = get(user, 'email', '');
+
+    if (isEmpty(email) || !email.includes('@') || !endsWith(email, '.com')) {
       alert('Email is required, should contain "@" and should end with ".com"');
+      return;
+    }
+    if(!isBoolean(user.sendNewsLetter)) {
+      alert('Newsletter subscription should be a boolean');
       return;
     }
     setUser({ ...user, firstName: finalFirstName, lastName: finalLastName });
     setSuccessMessage(`User created: ${finalFirstName} ${finalLastName}`);
+    setUserCreated(true);
   };
 
   const addToCart = (product) => {
     setCart([...cart, product]);
   };
 
+  const addNewProduct = () => {
+    const { name, type, price, producer } = newProduct;
+    if(!name || !type || !price || !producer) {
+      alert('All fields are required to add product.');
+      return;
+    }
+
+    const product = {
+      name: capitalize(name),
+      type: capitalize(type),
+      price: parseFloat(price),
+      producer: capitalize(producer),
+    };
+    setProducts([...products, product]);
+    setNewProduct({name: '', type: '', price: '', producer: ''});
+  };
+
+  const removeFromCart = (productToRemove) => {
+    const index = cart.findIndex(product => product === productToRemove);
+    if(index !== -1) {
+      setCart(cart.filter((_, i) => i !== index));
+    }
+  };
+
   const totalCartPrice = reduce(cart, (acc, product) => add(acc, product.price), 0);
 
+  // Filter products by type or name
+  const getFilteredProducts = () => {
+    if (!searchQuery) return products;
+    const query = searchQuery.toLowerCase();
+    return filter(products, (product) =>
+      product.name.toLowerCase().includes(query) ||
+      product.type.toLowerCase().includes(query)
+    );
+  };
+
+  // User interface
   return React.createElement(
     'div',
     null,
@@ -79,15 +144,47 @@ const App = () => {
         'Create User'
       )
     ),
+    userCreated &&
+    React.createElement(
+      'section',
+      null,
+    React.createElement('h2', null, 'Add new product'),
+    React.createElement('input', {
+      placeholder: 'Product name',
+      value: newProduct.name,
+      onChange: (e) => setNewProduct({ ...newProduct, name: e.target.value }),
+    }),
+    React.createElement('input', {
+      placeholder: 'Product type',
+      value: newProduct.type,
+      onChange: (e) => setNewProduct({ ...newProduct, type: e.target.value }),
+    }),
+    React.createElement('input', {
+      placeholder: 'Price',
+      type: 'number',
+      value: newProduct.price,
+      onChange: (e) => setNewProduct({ ...newProduct, price: e.target.value }),
+    }),
+    React.createElement('input', {
+      placeholder: 'Producer',
+      value: newProduct.producer,
+      onChange: (e) => setNewProduct({ ...newProduct, producer: e.target.value }),
+    }),
+    React.createElement('button', { onClick: addNewProduct }, 'Add product')),
     React.createElement(
       'section',
       null,
       React.createElement('h2', null, 'Available Products'),
-      products.map((product, index) =>
+      React.createElement('input', {
+        placeholder: 'Search by name or type',
+        value: searchQuery,
+        onChange: (e) => setSearchQuery(e.target.value),
+      }),
+      getFilteredProducts().map((product, index) =>
         React.createElement(
           'div',
           { key: index },
-          `${product.name} - $${product.price.toFixed(2)}`,
+          `${product.name} - $${(product.price || 0).toFixed(2)}`,
           React.createElement(
             'button',
             { onClick: () => addToCart(product) },
@@ -96,6 +193,7 @@ const App = () => {
         )
       )
     ),
+    // shopping cart
     React.createElement(
       'section',
       null,
@@ -104,7 +202,12 @@ const App = () => {
         React.createElement(
           'div',
           { key: index },
-          `${item.name} - $${item.price.toFixed(2)}`
+          `${item.name} - $${item.price.toFixed(2)}`,
+          React.createElement(
+            'button',
+            { onClick: () => removeFromCart(item)},
+            'Remove'
+          )
         )
       ),
       React.createElement('h3', null, `Total: $${totalCartPrice.toFixed(2)}`)
