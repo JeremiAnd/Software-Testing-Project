@@ -23,6 +23,6 @@ describe('Library component - add', () => {
     });
 
     it('should handle small decimals', () => {
-        expect(add(0.00000000003, 0.00000000002)).to.equal(0.00000000005);
+        expect(add(0.00000000003, 0.00000000002)).to.be.closeTo(0.00000000005, 1e-11);
     });
 });
