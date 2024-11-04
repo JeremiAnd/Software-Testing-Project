@@ -30,7 +30,7 @@ describe('Library component - isEmpty', () => {
         expect(isEmpty([1, 2, 3])).to.be.false;
     });
 
-    t('should return true for an empty object', () => {
+    it('should return true for an empty object', () => {
         expect(isEmpty({})).to.be.true;
     });
 
