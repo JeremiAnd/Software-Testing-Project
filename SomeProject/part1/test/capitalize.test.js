@@ -13,4 +13,14 @@ describe('Library component - capitalize', () => {
     it('should capitalize first word in a sentence', () => {
         expect(capitalize('hello world')).to.equal('Hello world');
     });
+
+    it('should handle empty string cases', () => {
+        expect(capitalize('')).to.equal('');
+    });
+
+    it('should not be confused by abnormal characters', () => {
+        expect(capitalize('.')).to.equal('.');
+    });
+
+
 });

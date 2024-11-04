@@ -17,4 +17,10 @@ describe('Library component - reduce', () => {
         const sum = reduce(numbers, (acc, num) => acc + num, 0);
         expect(sum).to.equal(0);
     });
+
+    it('should handle multiply operations', () => {
+        const numbers = [2, 2, 2, -2];
+        const sum = reduce(numbers, (acc, num) => acc * num, 0);
+        expect(sum).to.equal(-16);
+    });
 });
