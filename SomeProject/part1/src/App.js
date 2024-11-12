@@ -25,9 +25,9 @@ const App = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const [products, setProducts] = useState([
-    { name: 'Apple', type: 'Fruit', price: 1.2, producer: "Johnson's" },
-    { name: 'Banana', type: 'Fruit', price: 0.5, producer: "Chiquita" },
-    { name: 'Carrot', type: 'Vegetable', price: 0.15, producer: "Viljanen Oy" },
+    { name: 'Apple', type: 'Fruit', price: 1.2, producer: "Johnson's", productContents: 'Vitamin C, Fiber' },
+    { name: 'Banana', type: 'Fruit', price: 0.5, producer: "Chiquita", productContents: 'Vitamin B' },
+    { name: 'Carrot', type: 'Vegetable', price: 0.15, producer: "Viljanen Oy", productContents: 'Vitamin A' },
   ]);
 
   const [newProduct, setNewProduct] = useState({
@@ -35,6 +35,7 @@ const App = () => {
     type: '',
     price: '',
     producer: '',
+    productContents: '',
   });
 
   // Store cart items if page gets reloaded
@@ -73,7 +74,7 @@ const App = () => {
   };
 
   const addNewProduct = () => {
-    const { name, type, price, producer } = newProduct;
+    const { name, type, price, producer, productContents } = newProduct;
     if(!name || !type || !price || !producer) {
       alert('All fields are required to add product.');
       return;
@@ -84,9 +85,10 @@ const App = () => {
       type: capitalize(type),
       price: parseFloat(price),
       producer: capitalize(producer),
+      productContents,
     };
     setProducts([...products, product]);
-    setNewProduct({name: '', type: '', price: '', producer: ''});
+    setNewProduct({name: '', type: '', price: '', producer: '', productContents: ''});
   };
 
   const removeFromCart = (productToRemove) => {
@@ -104,7 +106,9 @@ const App = () => {
     const query = searchQuery.toLowerCase();
     return filter(products, (product) =>
       product.name.toLowerCase().includes(query) ||
-      product.type.toLowerCase().includes(query)
+      product.type.toLowerCase().includes(query) ||
+      product.productContents.toLowerCase().includes(query) ||
+      product.producer.toLowerCase().includes(query)
     );
   };
 
@@ -170,13 +174,18 @@ const App = () => {
       value: newProduct.producer,
       onChange: (e) => setNewProduct({ ...newProduct, producer: e.target.value }),
     }),
+    React.createElement('input', {
+      placeholder: 'Product contents',
+      value: newProduct.productContents,
+      onChange: (e) => setNewProduct({ ...newProduct, productContents: e.target.value }),
+    }),
     React.createElement('button', { onClick: addNewProduct }, 'Add product')),
     React.createElement(
       'section',
       null,
       React.createElement('h2', null, 'Available Products'),
       React.createElement('input', {
-        placeholder: 'Search by name or type',
+        placeholder: 'Search by name, type, contents or producer',
         value: searchQuery,
         onChange: (e) => setSearchQuery(e.target.value),
       }),
@@ -184,7 +193,7 @@ const App = () => {
         React.createElement(
           'div',
           { key: index },
-          `${product.name} - $${(product.price || 0).toFixed(2)}`,
+          `${product.name} - $${(product.price || 0).toFixed(2)} - ${product.producer} (${product.productContents})`,
           React.createElement(
             'button',
             { onClick: () => addToCart(product) },

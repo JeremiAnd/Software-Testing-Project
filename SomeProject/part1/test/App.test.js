@@ -78,3 +78,42 @@ describe('App Component', () => {
     expect(totalPrice.textContent).to.contain('$1.20');
   });
 });
+
+describe('E-commerce store integration test', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    render(React.createElement(App));
+  });
+
+  it('should allow user creation, add items to cart, and maintain cart items after page reloading.', () => {
+    fireEvent.change(screen.getByPlaceholderText('first name'), {target: {value: 'John'} });
+    fireEvent.change(screen.getByPlaceholderText('last name'), {target: {value: 'Doe'} });
+    fireEvent.change(screen.getByPlaceholderText('email'), {target: {value: 'john.doe@gmail.com'} });
+    fireEvent.click(screen.getByText('Subscribe to newsletter'));
+    fireEvent.click(screen.getByText('Create User'));
+
+    const createdUserAlert = screen.getByText(/User created: John Doe/i);
+    expect(createdUserAlert).to.exist;
+
+    const addCartButtons = screen.getAllByText('Add to cart');
+    fireEvent.click(addCartButtons[0]); // add apple
+    fireEvent.click(addCartButtons[1]); // add banana
+
+    const cartHeading = screen.getByText(/Shopping Cart/i);
+    const cartSection = cartHeading.parentElement;
+
+    expect(within(cartSection).getByText(/Apple - \$1.20/i)).to.exist;
+    expect(within(cartSection).getByText(/Banana - \$0.50/i)).to.exist;
+
+    const totalPrice = screen.getByText(/Total:/i);
+    expect(totalPrice.textContent).to.contain('$1.70');
+
+    //page reload
+    render(React.createElement(App));
+
+    const savedCart = JSON.parse(localStorage.getItem('cart'));
+    expect(savedCart.length).to.equal(2);
+    expect(savedCart[0].name).to.equal('Apple');
+    expect(savedCart[1].name).to.equal('Banana');
+  });
+});
