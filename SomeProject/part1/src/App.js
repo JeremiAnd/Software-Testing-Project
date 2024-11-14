@@ -91,16 +91,13 @@ const App = () => {
     setNewProduct({name: '', type: '', price: '', producer: '', productContents: ''});
   };
 
-  const removeFromCart = (productToRemove) => {
-    const index = cart.findIndex(product => product === productToRemove);
-    if(index !== -1) {
-      setCart(cart.filter((_, i) => i !== index));
-    }
+  const removeFromCart = (indexToRemove) => {
+    setCart(cart.filter((_, index) => index !== indexToRemove));
   };
 
   const totalCartPrice = reduce(cart, (acc, product) => add(acc, product.price), 0);
 
-  // Filter products by type or name
+  // Filter products by name, type, contents or producer
   const getFilteredProducts = () => {
     if (!searchQuery) return products;
     const query = searchQuery.toLowerCase();
@@ -112,6 +109,14 @@ const App = () => {
     );
   };
 
+  const getCartSummary = () => {
+    return map(cart, item => ({
+      name: item.name,
+      price: item.price,
+      producer: item.producer,
+    }));
+  };
+  
   // User interface
   return React.createElement(
     'div',
@@ -203,24 +208,22 @@ const App = () => {
       )
     ),
     // shopping cart
-    React.createElement(
-      'section',
-      null,
+    React.createElement('section', null,
       React.createElement('h2', null, 'Shopping Cart'),
-      cart.map((item, index) =>
+      getCartSummary().map((item, index) => 
         React.createElement(
           'div',
-          { key: index },
-          `${item.name} - $${item.price.toFixed(2)}`,
-          React.createElement(
-            'button',
-            { onClick: () => removeFromCart(item)},
-            'Remove'
+            { key: index },
+            `${item.name}: $${item.price.toFixed(2)} - ${item.producer}`,
+            React.createElement(
+              'button',
+              { onClick: () => removeFromCart(index) },
+              'Remove'
+            )
           )
-        )
-      ),
-      React.createElement('h3', null, `Total: $${totalCartPrice.toFixed(2)}`)
-    )
+      )
+    ),
+    React.createElement('h3', null, `Total: $${totalCartPrice.toFixed(2)}`)
   );
 };
 

@@ -62,7 +62,9 @@ describe('App Component', () => {
     const cartSection = cartHeading.parentElement;
 
     // Verify the product appears in the cart
-    const cartItem = within(cartSection).getByText(/Apple - \$1.20/i);
+    const cartItem = within(cartSection).getByText((content, element) => {
+      return content.includes('Apple') && content.includes('$1.20');
+    });
     expect(cartItem).to.exist;
   });
 
@@ -102,8 +104,12 @@ describe('E-commerce store integration test', () => {
     const cartHeading = screen.getByText(/Shopping Cart/i);
     const cartSection = cartHeading.parentElement;
 
-    expect(within(cartSection).getByText(/Apple - \$1.20/i)).to.exist;
-    expect(within(cartSection).getByText(/Banana - \$0.50/i)).to.exist;
+    expect(within(cartSection).getByText((content, element) => {
+      return content.includes('Apple') && content.includes('$1.20');
+    })).to.exist;
+    expect(within(cartSection).getByText((content, element) => {
+      return content.includes('Banana') && content.includes('$0.50');
+    })).to.exist;
 
     const totalPrice = screen.getByText(/Total:/i);
     expect(totalPrice.textContent).to.contain('$1.70');
