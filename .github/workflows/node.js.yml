@@ -11,38 +11,47 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+
     - name: Install dependencies
       working-directory: ./SomeProject/part1
       run: npm ci
+
     - name: Run tests and generate coverage
       working-directory: ./SomeProject/part1
+      id: test-step
       run: |
         npm run coverage
-      continue-on-error: true 
+      continue-on-error: true # Allow subsequent steps to run even if tests fail
+
     - name: Verify lcov.info
       working-directory: ./SomeProject/part1/coverage
       run: cat lcov.info
-      continue-on-error: true 
+      continue-on-error: true
+
     - name: Upload coverage to Coveralls
-      if: always()
+      if: always() # generate coverage report regardless of steps failing
       uses: coverallsapp/github-action@v2
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       with:
         path-to-lcov: ./SomeProject/part1/coverage/lcov.info
         github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    # show that github actions failed if any tests failed
+    - name: Fail if tests failed
+      if: steps.test-step.outcome == 'failure' 
+      run: exit 1
