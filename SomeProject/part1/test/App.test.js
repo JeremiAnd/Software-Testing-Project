@@ -123,3 +123,125 @@ describe('E-commerce store integration test', () => {
     expect(savedCart[1].name).to.equal('Banana');
   });
 });
+
+
+describe('App Component - Add New Product', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    render(React.createElement(App));
+  });
+  
+
+  it('should add a new product to the product list', () => {
+    // Ensure user is created first to unlock the "Add new product" section
+    fireEvent.change(screen.getByPlaceholderText('first name'), { target: { value: 'John' } });
+    fireEvent.change(screen.getByPlaceholderText('last name'), { target: { value: 'Doe' } });
+    fireEvent.change(screen.getByPlaceholderText('email'), { target: { value: 'john.doe@gmail.com' } });
+    fireEvent.click(screen.getByText('Subscribe to newsletter'));
+    fireEvent.click(screen.getByText('Create User'));
+
+    // Fill the product form
+    fireEvent.change(screen.getByPlaceholderText('Product name'), { target: { value: 'Mango' } });
+    fireEvent.change(screen.getByPlaceholderText('Product type'), { target: { value: 'Fruit' } });
+    fireEvent.change(screen.getByPlaceholderText('Price'), { target: { value: '1.5' } });
+    fireEvent.change(screen.getByPlaceholderText('Producer'), { target: { value: 'Tropical Farms' } });
+    fireEvent.change(screen.getByPlaceholderText('Product contents'), { target: { value: 'Vitamin C, Fiber' } });
+
+    // Submit the form to add a product
+    fireEvent.click(screen.getByRole('button', { name: /Add product/i }));
+
+    // Verify the new product is added to the products list
+    const newProductElement = screen.getByText(/Mango - \$1\.50 - Tropical Farms/i);
+    expect(newProductElement).to.exist;
+  });
+});
+
+
+describe('App Component - Search Query Filtering', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    render(React.createElement(App));
+  });
+
+  it('should return all products if the search query is empty', () => {
+    // Ensure user is created first to unlock functionality
+    fireEvent.change(screen.getByPlaceholderText('first name'), { target: { value: 'John' } });
+    fireEvent.change(screen.getByPlaceholderText('last name'), { target: { value: 'Doe' } });
+    fireEvent.change(screen.getByPlaceholderText('email'), { target: { value: 'john.doe@gmail.com' } });
+    fireEvent.click(screen.getByText('Subscribe to newsletter'));
+    fireEvent.click(screen.getByText('Create User'));
+
+    // Ensure all products are shown when there is no query
+    const productElements = screen.getAllByText(/Add to cart/);
+    expect(productElements.length).to.equal(3); // Apple, Banana, Carrot
+  });
+
+  it('should filter products by name', () => {
+    fireEvent.change(screen.getByPlaceholderText('Search by name, type, contents or producer'), {
+      target: { value: 'Banana' },
+    });
+
+    const productElement = screen.queryByText(/Banana - \$0\.50 - Chiquita/i);
+    expect(productElement).to.not.be.null;
+
+    const otherProductElement = screen.queryByText(/Apple|Carrot/i);
+    expect(otherProductElement).to.be.null;
+  });
+
+  it('should filter products by type', () => {
+    fireEvent.change(screen.getByPlaceholderText('Search by name, type, contents or producer'), {
+      target: { value: 'Vegetable' },
+    });
+
+    const productElement = screen.queryByText(/Carrot - \$0\.15 - Viljanen Oy/i);
+    expect(productElement).to.not.be.null;
+
+    const otherProductElement = screen.queryByText(/Apple|Banana/i);
+    expect(otherProductElement).to.be.null;
+  });
+
+  it('should filter products by producer', () => {
+    fireEvent.change(screen.getByPlaceholderText('Search by name, type, contents or producer'), {
+      target: { value: 'Chiquita' },
+    });
+
+    const productElement = screen.queryByText(/Banana - \$0\.50 - Chiquita/i);
+    expect(productElement).to.not.be.null;
+
+    const otherProductElement = screen.queryByText(/Apple|Carrot/i);
+    expect(otherProductElement).to.be.null;
+  });
+
+  it('should filter products by contents', () => {
+    fireEvent.change(screen.getByPlaceholderText('Search by name, type, contents or producer'), {
+      target: { value: 'Vitamin C' },
+    });
+
+    const productElement = screen.queryByText(/Apple - \$1\.20 - Johnson's/i);
+    expect(productElement).to.not.be.null;
+
+    const otherProductElement = screen.queryByText(/Banana|Carrot/i);
+    expect(otherProductElement).to.be.null;
+  });
+
+  it('should handle case-insensitive queries', () => {
+    fireEvent.change(screen.getByPlaceholderText('Search by name, type, contents or producer'), {
+      target: { value: 'vEgEtAbLe' }, // Mixed casing
+    });
+
+    const productElement = screen.queryByText(/Carrot - \$0\.15 - Viljanen Oy/i);
+    expect(productElement).to.not.be.null;
+
+    const otherProductElement = screen.queryByText(/Apple|Banana/i);
+    expect(otherProductElement).to.be.null;
+  });
+
+  it('should return no products if no match is found', () => {
+    fireEvent.change(screen.getByPlaceholderText('Search by name, type, contents or producer'), {
+      target: { value: 'Nonexistent' },
+    });
+
+    const otherProductElement = screen.queryByText(/Apple|Banana|Carrot/i);
+    expect(otherProductElement).to.be.null;
+  });
+});
